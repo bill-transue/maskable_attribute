@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class MaskableAttributeTest < Test::Unit::TestCase
+class MaskableAttributeTest < ActiveSupport::TestCase
   test "truth" do
     assert_kind_of Module, MaskableAttribute
   end
