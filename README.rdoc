@@ -1,3 +1,10 @@
 = MaskableAttribute
 
-This project rocks and uses MIT-LICENSE.
+This project rocks^H^H^H^H sucks and uses MIT-LICENSE.
+
+Steps to test:
+1. <tt>cd test/dummy</tt>
+2. <tt>rake db:migrate</tt>
+3. <tt>rake db:test:clone</tt>
+4. <tt>cd -</tt>
+5. <tt>rake test</tt>
