@@ -1,3 +1,4 @@
 require "maskable_attribute/acts_as_maskable_attribute"
+require "maskable_attribute/maskable_attribute"
 module MaskableAttribute
 end
