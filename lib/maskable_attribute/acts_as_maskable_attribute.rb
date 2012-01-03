@@ -17,9 +17,11 @@ module MaskableAttribute
       def maskable_attribute(masked_attribute, *masks)
         cattr_accessor :masked_attributes, :masks
         self.masked_attributes ||= Hash.new
-        self.masked_attributes[masked_attribute] = nil
-        self.masks ||= Hash.new
-        self.masks[masked_attribute] = Array.wrap masks
+        self.masked_attributes[masked_attribute] = MaskableAttribute.new masks
+        self.masks ||= {}
+        self.masks[masked_attribute] = masks
+        self.send(:define_method, name.to_s) { maskable_attributes[masked_attribute] }
+        self.send(:define_method, name.to_s + "=") { |value| maskable_attributes[masked_attribute] = value }
       end
     end
   end
