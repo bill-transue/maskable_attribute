@@ -20,8 +20,14 @@ module MaskableAttribute
         self.masked_attributes[masked_attribute] = MaskableAttribute.new masks
         self.masks ||= {}
         self.masks[masked_attribute] = masks
-        self.send(:define_method, name.to_s) { maskable_attributes[masked_attribute] }
-        self.send(:define_method, name.to_s + "=") { |value| maskable_attributes[masked_attribute] = value }
+        
+        define_method masked_attribute do
+          masked_attributes[masked_attribute]
+        end
+
+        define_method "#{masked_attribute}=" do |value|
+          masked_attributes[masked_attribute] = value
+        end
       end
     end
   end
