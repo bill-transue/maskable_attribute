@@ -6,22 +6,22 @@ module MaskableAttribute
       @masks = masks
     end
 
-    def available_masks
+    def masks
       @masks
     end
 
-    def masked(obj)
+    def masked(object)
       if !@value.blank? and @value.match(/\{.*\}/)
         @value.scan(/(?<={)\w+(?=})/).each do |mask|
           two_digits = !!@value.sub!("two_digits_", "")
-          if respond_to? obj.mask
+          if respond_to? object.mask
             if two_digits
-              @value.sub! "{two_digits_#{mask}}", format('%02d', obj.send(mask))
+              @value.sub! "{two_digits_#{mask}}", format('%02d', object.send(mask))
             else
-              @value.sub! "{#{mask}}", obj.send(mask)
+              @value.sub! "{#{mask}}", object.send(mask)
             end
           else
-            raise InvalidMask.new mask, obj
+            raise InvalidMask.new mask, object
           end
         end
       end

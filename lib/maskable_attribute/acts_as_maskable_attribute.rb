@@ -17,7 +17,7 @@ module MaskableAttribute
       def maskable_attribute(masked_attribute, *masks)
         cattr_accessor :masked_attributes, :masks
         self.masked_attributes ||= Hash.new
-        self.masked_attributes[masked_attribute] = MaskableAttribute.new masks
+        self.masked_attributes[masked_attribute] = MaskableAttribute.new *masks
         self.masks ||= {}
         self.masks[masked_attribute] = masks
         
@@ -26,7 +26,7 @@ module MaskableAttribute
         end
 
         define_method "#{masked_attribute}=" do |value|
-          masked_attributes[masked_attribute] = value
+          masked_attributes[masked_attribute].set = value
         end
       end
     end
