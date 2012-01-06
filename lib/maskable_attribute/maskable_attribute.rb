@@ -27,6 +27,10 @@ module MaskableAttribute
       end
     end
 
+    def masked_object
+      self
+    end
+
     def unmasked
       @value
     end
