@@ -14,21 +14,25 @@ module MaskableAttribute
       # class Foo < ActiveRecord::Base
       #   maskable_attrribute :some_attribute, :some_method_be_used_as_a_mask, :another_attribute_mask
       # end
-      def maskable_attribute(masked_attribute, *masks)
-        cattr_accessor :masked_attributes, :masks
-        self.masked_attributes ||= Hash.new
-        self.masked_attributes[masked_attribute] = MaskableAttribute.new *masks
+      def maskable_attribute(attribute_to_mask, *masks)
+        cattr_accessor :masks
         self.masks ||= {}
-        self.masks[masked_attribute] = masks
+        self.masks[attribute_to_mask] = masks
         
-        define_method masked_attribute do
-          masked_attributes[masked_attribute]
+        define_method attribute_to_mask do
+          masked_attribute attribute_to_mask
         end
 
-        define_method "#{masked_attribute}=" do |value|
-          masked_attributes[masked_attribute].set = value
+        define_method "#{attribute_to_mask}=" do |value|
+          masked_attribute(attribute_to_mask).set = value
         end
       end
+    end
+
+    attr_accessor :masked_attribute
+
+    def masked_attribute(attribute)
+      @masked_attribute ||= MaskableAttribute.new self, *self.class.masks[attribute]
     end
   end
 end

@@ -1,8 +1,9 @@
 module MaskableAttribute
   class MaskableAttribute
-    attr_accessor :value, :masks
+    attr_accessor :object, :value, :masks
 
-    def initialize(*masks)
+    def initialize(object, *masks)
+      @object = object
       @masks = masks
     end
 
@@ -10,7 +11,7 @@ module MaskableAttribute
       @masks
     end
 
-    def masked(object)
+    def masked
       if !@value.blank? and @value.match(/\{.*\}/)
         @value.scan(/(?<={)\w+(?=})/).each do |mask|
           two_digits = !!@value.sub!("two_digits_", "")
@@ -28,7 +29,7 @@ module MaskableAttribute
     end
 
     def masked_object
-      self
+      object
     end
 
     def unmasked
