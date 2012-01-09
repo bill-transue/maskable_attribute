@@ -29,7 +29,7 @@ module MaskableAttribute
       if !value.blank? and value.match(/\{.*\}/)
         value.scan(/(?<={)\w+(?=})/).each do |mask|
           two_digits = !!value.sub!("two_digits_", "")
-          if respond_to? object.mask
+          if object.respond_to? mask
             if two_digits
               value.sub! "{two_digits_#{mask}}", format('%02d', object.send(mask))
             else
@@ -40,7 +40,10 @@ module MaskableAttribute
           end
         end
       end
+      value
     end
+
+    alias :to_s :masked
 
     def masked_object
       object
