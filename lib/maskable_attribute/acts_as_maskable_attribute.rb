@@ -24,7 +24,7 @@ module MaskableAttribute
         end
 
         define_method "#{attribute_to_mask}=" do |value|
-          masked_attribute(attribute_to_mask).set = value
+          write_attribute attribute_to_mask, masked_attribute(attribute_to_mask).set(value)
         end
       end
     end
@@ -32,7 +32,7 @@ module MaskableAttribute
     attr_accessor :masked_attribute
 
     def masked_attribute(attribute)
-      @masked_attribute ||= MaskableAttribute.new self, *self.class.masks[attribute]
+      @masked_attribute ||= MaskableAttribute.new self, attribute, *self.class.masks[attribute]
     end
   end
 end

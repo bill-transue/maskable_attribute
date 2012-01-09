@@ -26,4 +26,11 @@ class MaskableAttributeTest < ActiveSupport::TestCase
 
     assert_equal @hickwell, @hickwell.qux.masked_object, "Couldn't determine the masked object!"
   end
+
+  test "should be able to set masking of attribute" do
+    @hickwell = Hickwell.create!
+
+    @hickwell.qux = "{foo}{bar}{baz}"
+    assert_equal "{foo}{bar}{baz}", @hickwell.read_attribute(:qux), "Couln't set masking of attribute!"
+  end
 end

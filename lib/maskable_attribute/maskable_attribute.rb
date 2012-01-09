@@ -1,9 +1,10 @@
 module MaskableAttribute
   class MaskableAttribute
-    attr_accessor :object, :value, :masks
+    attr_accessor :object, :attribute, :masks
 
-    def initialize(object, *masks)
+    def initialize(object, attribute, *masks)
       @object = object
+      @attribute = attribute
       @masks = masks
     end
 
@@ -11,15 +12,28 @@ module MaskableAttribute
       @masks
     end
 
+    class InvalidMask < RuntimeError
+      attr :mask, :obj
+      def initialize(mask, obj)
+        @mask = mask
+        @obj = obj
+      end
+
+      def to_s
+        "Invalid mask '#{@mask}' for #{@obj.class.name}"
+      end
+    end
+
     def masked
-      if !@value.blank? and @value.match(/\{.*\}/)
-        @value.scan(/(?<={)\w+(?=})/).each do |mask|
-          two_digits = !!@value.sub!("two_digits_", "")
+      value = unmasked
+      if !value.blank? and value.match(/\{.*\}/)
+        value.scan(/(?<={)\w+(?=})/).each do |mask|
+          two_digits = !!value.sub!("two_digits_", "")
           if respond_to? object.mask
             if two_digits
-              @value.sub! "{two_digits_#{mask}}", format('%02d', object.send(mask))
+              value.sub! "{two_digits_#{mask}}", format('%02d', object.send(mask))
             else
-              @value.sub! "{#{mask}}", object.send(mask)
+              value.sub! "{#{mask}}", object.send(mask)
             end
           else
             raise InvalidMask.new mask, object
@@ -33,7 +47,12 @@ module MaskableAttribute
     end
 
     def unmasked
-      @value
+      object.read_attribute attribute
+    end
+
+    def set(value)
+      #TODO Make this method try and determine masks
+      value
     end
   end
 end
