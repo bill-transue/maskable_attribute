@@ -12,6 +12,33 @@ module MaskableAttribute
       @masks
     end
 
+    def masked
+      value = unmasked
+      if !value.blank? and value.match(/\{.*\}/)
+        value.scan(/(?<={)\w+(?=})/).each do |mask|
+          value.sub! "{#{mask}}", get_value_of(mask)
+        end
+      end
+      value
+    end
+
+    alias :to_s :masked
+
+    def masked_object
+      @object
+    end
+
+    def unmasked
+      @object.read_attribute attribute
+    end
+
+    def set(value)
+      masks.each do |mask|
+        value.sub! /#{get_value_of(mask)}(?![^{]*})/, "{#{mask}}" unless get_value_of(mask).blank?
+      end
+      value
+    end
+
     class InvalidMask < RuntimeError
       attr :mask, :obj
       def initialize(mask, obj)
@@ -24,38 +51,18 @@ module MaskableAttribute
       end
     end
 
-    def masked
-      value = unmasked
-      if !value.blank? and value.match(/\{.*\}/)
-        value.scan(/(?<={)\w+(?=})/).each do |mask|
-          two_digits = !!value.sub!("two_digits_", "")
-          if object.respond_to? mask
-            if two_digits
-              value.sub! "{two_digits_#{mask}}", format('%02d', object.send(mask))
-            else
-              value.sub! "{#{mask}}", object.send(mask)
-            end
-          else
-            raise InvalidMask.new mask, object
-          end
+    private
+    def get_value_of(mask)
+      two_digits = !!mask.to_s.sub!("two_digits_", "")
+      if @object.respond_to? mask
+        if two_digits
+          format '%02d', @object.send(mask)
+        else
+          @object.send mask
         end
+      else
+        raise InvalidMask.new mask, @object
       end
-      value
-    end
-
-    alias :to_s :masked
-
-    def masked_object
-      object
-    end
-
-    def unmasked
-      object.read_attribute attribute
-    end
-
-    def set(value)
-      #TODO Make this method try and determine masks
-      value
     end
   end
 end
