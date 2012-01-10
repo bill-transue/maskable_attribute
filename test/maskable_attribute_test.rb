@@ -52,4 +52,10 @@ class MaskableAttributeTest < ActiveSupport::TestCase
 
     assert_equal "{foo}{bar}{baz}", @hickwell.qux.unmasked, "Masks didn't perist though update"
   end
+
+  test "should raise exception if maskable_attribute isn't actually an attribute" do
+    assert_raise ArgumentError do
+      Hickwell.maskable_attribute :fail, [ :foo, :bar, :baz ]
+    end
+  end
 end
