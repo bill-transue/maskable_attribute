@@ -45,4 +45,11 @@ class MaskableAttributeTest < ActiveSupport::TestCase
 
     assert_equal "{foo}{bar}{baz}", @hickwell.qux.unmasked, "Could get attribute unmasked"
   end
+
+  test "should be able to get set value of attribute and have masks perist" do
+    @hickwell = Hickwell.create! :foo => "a", :bar => "b", :baz => "c", :qux => "{foo}{bar}{baz}"
+    @hickwell.qux = "abc"
+
+    assert_equal "{foo}{bar}{baz}", @hickwell.qux.unmasked, "Masks didn't perist though update"
+  end
 end

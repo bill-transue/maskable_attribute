@@ -5,6 +5,13 @@ class HickwellTest < ActiveSupport::TestCase
     @hickwell = Hickwell.create!
   end
 
+  test "should have 4 attributes, foo, bar, baz, qux" do
+    assert Hickwell.attribute_names.include?("foo"), "Missing attribute: foo"
+    assert Hickwell.attribute_names.include?("bar"), "Missing attribute: bar"
+    assert Hickwell.attribute_names.include?("baz"), "Missing attribute: baz"
+    assert Hickwell.attribute_names.include?("qux"), "Missing attribute: qux"
+  end
+
   test "should have maskable_attribute qux" do
     assert @hickwell.qux.is_a?(MaskableAttribute::MaskableAttribute), "Masked attribute isn't a MaskableAttribute"
   end
