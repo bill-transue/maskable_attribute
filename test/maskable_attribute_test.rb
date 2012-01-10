@@ -39,4 +39,10 @@ class MaskableAttributeTest < ActiveSupport::TestCase
     
     assert_equal "abc", @hickwell.qux.to_s, "Couldn't get attribute masked"
   end
+
+  test "should be able to get attribute unmasked" do
+    @hickwell = Hickwell.create! :foo => "a", :bar => "b", :baz => "c", :qux => "{foo}{bar}{baz}"
+
+    assert_equal "{foo}{bar}{baz}", @hickwell.qux.unmasked, "Could get attribute unmasked"
+  end
 end
