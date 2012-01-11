@@ -58,4 +58,10 @@ class MaskableAttributeTest < ActiveSupport::TestCase
       Hickwell.maskable_attribute :fail, [ :foo, :bar, :baz ]
     end
   end
+
+  test "should raise exception if no masks are passed" do
+    assert_raise ArgumentError do
+      Hickwell.maskable_attribute :qux
+    end
+  end
 end

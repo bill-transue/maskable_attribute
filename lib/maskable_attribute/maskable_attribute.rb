@@ -2,7 +2,7 @@ module MaskableAttribute
   class MaskableAttribute
     attr_accessor :object, :attribute, :masks
 
-    def initialize(object, attribute, *masks)
+    def initialize(object, attribute, masks)
       @object = object
       @attribute = attribute
       @masks = masks
