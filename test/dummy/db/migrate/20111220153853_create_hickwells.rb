@@ -1,5 +1,5 @@
 class CreateHickwells < ActiveRecord::Migration
-  def change
+  def self.up
     create_table :hickwells do |t|
       t.string :foo
       t.string :bar
@@ -8,5 +8,8 @@ class CreateHickwells < ActiveRecord::Migration
 
       t.timestamps
     end
+  end
+  def self.down
+    drop_table :hickwells
   end
 end
