@@ -16,12 +16,12 @@ module MaskableAttribute
       # end
 
       def maskable_attribute(attribute_to_mask, masks)
-        raise ArgumentError, "invalid argument (expected attribute)" unless attribute_names.include? attribute_to_mask.to_s
+        raise ArgumentError, "invalid argument (expected attribute)" unless column_names.include? attribute_to_mask.to_s
 
         cattr_accessor :masks
         self.masks ||= {}
         self.masks[attribute_to_mask] = masks
-        
+
         define_method attribute_to_mask do
           masked_attribute attribute_to_mask
         end

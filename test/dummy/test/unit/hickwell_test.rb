@@ -6,10 +6,10 @@ class HickwellTest < ActiveSupport::TestCase
   end
 
   test "should have 4 attributes, foo, bar, baz, qux" do
-    assert Hickwell.attribute_names.include?("foo"), "Missing attribute: foo"
-    assert Hickwell.attribute_names.include?("bar"), "Missing attribute: bar"
-    assert Hickwell.attribute_names.include?("baz"), "Missing attribute: baz"
-    assert Hickwell.attribute_names.include?("qux"), "Missing attribute: qux"
+    assert Hickwell.column_names.include?("foo"), "Missing attribute: foo"
+    assert Hickwell.column_names.include?("bar"), "Missing attribute: bar"
+    assert Hickwell.column_names.include?("baz"), "Missing attribute: baz"
+    assert Hickwell.column_names.include?("qux"), "Missing attribute: qux"
   end
 
   test "should have maskable_attribute qux" do
