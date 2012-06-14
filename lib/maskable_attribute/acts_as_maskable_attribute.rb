@@ -1,8 +1,8 @@
 module MaskableAttribute
   module ActsAsMaskableAttribute
-    extend ActiveSupport::Concern
 
-    included do
+    def self.included(base)
+      base.send :extend, ClassMethods
     end
 
     module ClassMethods
