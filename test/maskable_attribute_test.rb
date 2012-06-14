@@ -36,7 +36,7 @@ class MaskableAttributeTest < ActiveSupport::TestCase
 
   test "should be able to get attribute masked (by default)" do
     @hickwell = Hickwell.create! :foo => "a", :bar => "b", :baz => "c", :qux => "{foo}{bar}{baz}"
-    
+
     assert_equal "abc", @hickwell.qux.to_s, "Couldn't get attribute masked"
   end
 
@@ -46,11 +46,11 @@ class MaskableAttributeTest < ActiveSupport::TestCase
     assert_equal "{foo}{bar}{baz}", @hickwell.qux.unmasked, "Could get attribute unmasked"
   end
 
-  test "should be able to get set value of attribute and have masks perist" do
+  test "should be able to get set value of attribute and have masks persist" do
     @hickwell = Hickwell.create! :foo => "a", :bar => "b", :baz => "c", :qux => "{foo}{bar}{baz}"
-    @hickwell.qux = "abc"
+    @hickwell.qux = "bac"
 
-    assert_equal "{foo}{bar}{baz}", @hickwell.qux.unmasked, "Masks didn't perist though update"
+    assert_equal "{bar}{foo}{baz}", @hickwell.qux.unmasked, "Masks didn't persist though update"
   end
 
   test "should raise exception if maskable_attribute isn't actually an attribute" do
