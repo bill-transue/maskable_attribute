@@ -20,4 +20,12 @@ class HickwellTest < ActiveSupport::TestCase
     assert_respond_to @hickwell, :qux,  "No getter method"
     assert_respond_to @hickwell, :qux=, "No setter method"
   end
+
+  test "should have a quux method" do
+    assert @hickwell.respond_to? :quux, "Missing quux method"
+  end
+
+  test "returns 'thud' from quux method" do
+    assert_equal 'thud', @hickwell.quux, "#quux not returning 'thud'"
+  end
 end

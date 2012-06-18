@@ -7,7 +7,7 @@ module MaskableAttribute
 
     module ClassMethods
       ##
-      # Specifices an attribute to be masked, followed by masks to be made available to the attribute.
+      # Specifies an attribute to be masked, followed by masks to be made available to the attribute.
       #
       # ==== Examples
       #
@@ -21,6 +21,7 @@ module MaskableAttribute
         cattr_accessor :masks
         self.masks ||= {}
         self.masks[attribute_to_mask] = masks
+        self.masks
 
         define_method attribute_to_mask do
           masked_attribute attribute_to_mask

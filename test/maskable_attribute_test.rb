@@ -53,6 +53,26 @@ class MaskableAttributeTest < ActiveSupport::TestCase
     assert_equal "{bar}{foo}{baz}", @hickwell.qux.unmasked, "Masks didn't persist though update"
   end
 
+  test "masks should be able to reference differently named methods" do
+    class Rickwell < Hickwell
+      maskable_attribute :bar, :qux => :quux
+    end
+
+    @hickwell = Rickwell.create! :bar => "{qux}"
+
+    assert_equal "thud", @hickwell.bar.to_s
+  end
+
+  test "masks should be able to reference a Proc block" do
+    class Wickwell < Hickwell
+      maskable_attribute :baz, :ack => Proc.new { "syn" }
+    end
+
+    @hickwell = Wickwell.create! :baz => "{ack}"
+
+    assert_equal "syn", @hickwell.baz.to_s
+  end
+
   test "should raise exception if maskable_attribute isn't actually an attribute" do
     assert_raise ArgumentError do
       Hickwell.maskable_attribute :fail, [ :foo, :bar, :baz ]
