@@ -36,11 +36,7 @@ module MaskableAttribute
       end
 
       def apply(format, &block)
-        if block_given?
-          fetch(format, (has_default? ? @default : Format.new)).apply yield
-        else
-          fetch(format)
-        end
+        fetch(format, (has_default? ? @default : Format.new)).apply yield unless yield.nil?
       end
 
       def names
