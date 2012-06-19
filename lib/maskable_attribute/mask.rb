@@ -28,7 +28,7 @@ module MaskableAttribute
     end
 
     def [](accessor)
-      find_by_accessor(accessor).accessor(accessor)
+      (find_by_accessor(accessor) || Mask.new).accessor(accessor)
     end
 
     def find_by_accessor(accessor)
@@ -45,7 +45,7 @@ module MaskableAttribute
   class Mask
     attr_accessor :accessor, :name, :method, :formats
 
-    def initialize(options)
+    def initialize(options=nil)
       if options.is_a? Symbol
         @name = @method = options.to_sym
         options = {}
@@ -87,8 +87,10 @@ module MaskableAttribute
       formats.apply format do
         if @method.is_a? Proc
           @method.call object
-        else
+        elsif @method.is_a? Symbol
           object.send(@method) if object.respond_to? @method
+        else
+          nil
         end
       end
     end

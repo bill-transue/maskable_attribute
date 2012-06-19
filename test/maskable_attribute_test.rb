@@ -31,7 +31,15 @@ class MaskableAttributeTest < ActiveSupport::TestCase
     @hickwell = Hickwell.create!
 
     @hickwell.qux = "{foo}{bar}{baz}"
-    assert_equal "{foo}{bar}{baz}", @hickwell.read_attribute(:qux), "Couln't set masking of attribute"
+    assert_equal "{foo}{bar}{baz}", @hickwell.read_attribute(:qux), "Couldn't set masking of attribute"
+  end
+
+  test "should not overwrite attribute with unmasked attribute" do
+    @hickwell = Hickwell.create! :foo => "a", :bar => "b", :baz => "c", :qux => "{foo}{bar}{baz}"
+
+    assert_equal "abc", @hickwell.qux.to_s
+    assert_equal "abc", @hickwell.qux.to_s
+    assert_equal "{foo}{bar}{baz}", @hickwell.read_attribute(:qux), "Overwriting attribute with unmasked value"
   end
 
   test "should be able to get attribute masked (by default)" do
@@ -43,7 +51,7 @@ class MaskableAttributeTest < ActiveSupport::TestCase
   test "should be able to get attribute unmasked" do
     @hickwell = Hickwell.create! :foo => "a", :bar => "b", :baz => "c", :qux => "{foo}{bar}{baz}"
 
-    assert_equal "{foo}{bar}{baz}", @hickwell.qux.unmasked, "Could get attribute unmasked"
+    assert_equal "{foo}{bar}{baz}", @hickwell.qux.unmasked, "Could not get attribute unmasked"
   end
 
   test "should be able to get set value of attribute and have masks persist" do

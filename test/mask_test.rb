@@ -85,4 +85,11 @@ class MaskTest < ActiveSupport::TestCase
 
     assert_equal "Success", masks["capitalized downcase"].unmask("SUCCESS")
   end
+
+  test "should return nil when trying to access and get value of a non-existent mask" do
+    masks = MaskableAttribute::Masks.new [ :downcase => { :exclusive_format => { :capitalized => :capitalize } },
+                                           :bar => { :format => :upcase } ]
+
+    assert_nil masks["not a real mask"].unmask("nil is success!"), "This will probably be an error..."
+  end
 end
