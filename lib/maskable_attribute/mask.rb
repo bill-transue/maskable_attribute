@@ -85,11 +85,15 @@ module MaskableAttribute
       format = options[:formatted] || accessor.sub(@name.to_s, "").strip.to_sym
 
       formats.apply format do
-        if @method.is_a? Proc
-          @method.call object
-        elsif @method.is_a? Symbol
-          object.send(@method) if object.respond_to? @method
-        else
+        begin
+          if @method.is_a? Proc
+            @method.call object
+          elsif @method.is_a? Symbol
+            object.send(@method) if object.respond_to? @method
+          else
+            nil
+          end
+        rescue NoMethodError
           nil
         end
       end
