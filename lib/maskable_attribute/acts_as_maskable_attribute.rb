@@ -24,11 +24,15 @@ module MaskableAttribute
         self.masks
 
         define_method attribute_to_mask do
-          masked_attribute attribute_to_mask
+          send("maskable_#{attribute_to_mask}").to_s
         end
 
         define_method "#{attribute_to_mask}=" do |value|
           write_attribute attribute_to_mask, masked_attribute(attribute_to_mask).set(value)
+        end
+
+        define_method "maskable_#{attribute_to_mask}" do
+          masked_attribute attribute_to_mask
         end
       end
     end

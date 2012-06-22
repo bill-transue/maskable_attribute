@@ -12,19 +12,19 @@ class MaskableAttributeTest < ActiveSupport::TestCase
   test "should be able to get available masks" do
     @hickwell = Hickwell.create!
 
-    assert_respond_to @hickwell.qux, :masks, "Couldn't get available masks"
+    assert_respond_to @hickwell.maskable_qux, :masks, "Couldn't get available masks"
   end
 
   test "should get available masks" do
     @hickwell = Hickwell.create!
 
-    assert_equal [ :foo, :bar, :baz ], @hickwell.qux.masks, "Masks method did not return list of masks"
+    assert_equal [ :foo, :bar, :baz ], @hickwell.maskable_qux.masks, "Masks method did not return list of masks"
   end
 
   test "should have masked_object available to itself" do
     @hickwell = Hickwell.create!
 
-    assert_equal @hickwell, @hickwell.qux.masked_object, "Couldn't determine the masked object"
+    assert_equal @hickwell, @hickwell.maskable_qux.masked_object, "Couldn't determine the masked object"
   end
 
   test "should be able to set masking of attribute" do
@@ -37,8 +37,8 @@ class MaskableAttributeTest < ActiveSupport::TestCase
   test "should not overwrite attribute with unmasked attribute" do
     @hickwell = Hickwell.create! :foo => "a", :bar => "b", :baz => "c", :qux => "{foo}{bar}{baz}"
 
-    assert_equal "abc", @hickwell.qux.to_s
-    assert_equal "abc", @hickwell.qux.to_s
+    assert_equal "abc", @hickwell.qux
+    assert_equal "abc", @hickwell.qux
     assert_equal "{foo}{bar}{baz}", @hickwell.read_attribute(:qux), "Overwriting attribute with unmasked value"
   end
 
@@ -51,14 +51,14 @@ class MaskableAttributeTest < ActiveSupport::TestCase
   test "should be able to get attribute unmasked" do
     @hickwell = Hickwell.create! :foo => "a", :bar => "b", :baz => "c", :qux => "{foo}{bar}{baz}"
 
-    assert_equal "{foo}{bar}{baz}", @hickwell.qux.unmasked, "Could not get attribute unmasked"
+    assert_equal "{foo}{bar}{baz}", @hickwell.maskable_qux.unmasked, "Could not get attribute unmasked"
   end
 
   test "should be able to get set value of attribute and have masks persist" do
     @hickwell = Hickwell.create! :foo => "a", :bar => "b", :baz => "c", :qux => "{foo}{bar}{baz}"
     @hickwell.qux = "bac"
 
-    assert_equal "{bar}{foo}{baz}", @hickwell.qux.unmasked, "Masks didn't persist though update"
+    assert_equal "{bar}{foo}{baz}", @hickwell.maskable_qux.unmasked, "Masks didn't persist though update"
   end
 
   test "masks should be able to reference differently named methods" do
@@ -68,7 +68,7 @@ class MaskableAttributeTest < ActiveSupport::TestCase
 
     @hickwell = Rickwell.create! :bar => "{qux}"
 
-    assert_equal "thud", @hickwell.bar.to_s
+    assert_equal "thud", @hickwell.bar
   end
 
   test "masks should be able to reference a Proc block" do
@@ -78,7 +78,7 @@ class MaskableAttributeTest < ActiveSupport::TestCase
 
     @hickwell = Wickwell.create! :baz => "{ack}"
 
-    assert_equal "syn", @hickwell.baz.to_s
+    assert_equal "syn", @hickwell.baz
   end
 
   test "should raise exception if maskable_attribute isn't actually an attribute" do
