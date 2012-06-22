@@ -71,6 +71,13 @@ class MaskableAttributeTest < ActiveSupport::TestCase
     assert_equal "thud", @hickwell.bar
   end
 
+  test "should allow maskable_attribute to be nil" do
+    @hickwell = Hickwell.create! :foo => "a", :bar => "b", :baz => "c", :qux => "{foo}{bar}{baz}"
+    @hickwell.qux = nil
+
+    assert_nil @hickwell.qux, "Maskable attribute not set to nil"
+  end
+
   test "masks should be able to reference a Proc block" do
     class Wickwell < Hickwell
       maskable_attribute :baz, :ack => Proc.new { "syn" }

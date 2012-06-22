@@ -33,9 +33,11 @@ module MaskableAttribute
     end
 
     def set(value)
-      @masks.each do |mask|
-        mask.accessed_by.each do |mask_accessor|
-          value.sub! /#{mask.unmask(@object, :formatted => mask_accessor)}(?![^{]*})/, "{#{mask_accessor}}" unless mask.unmask(@object).blank?
+      unless value.blank?
+        @masks.each do |mask|
+          mask.accessed_by.each do |mask_accessor|
+            value.sub! /#{mask.unmask(@object, :formatted => mask_accessor)}(?![^{]*})/, "{#{mask_accessor}}" unless mask.unmask(@object).blank?
+          end
         end
       end
       value
