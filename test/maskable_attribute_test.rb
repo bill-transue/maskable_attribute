@@ -98,6 +98,57 @@ class MaskableAttributeTest < ActiveSupport::TestCase
     assert_equal "syn", @hickwell.bar, "Did not retrieve mask for multiple words"
   end
 
+  test "masks should be able to handle multiple words with spaces" do
+    class Zickwell < Hickwell
+      maskable_attribute :bar, :foo_bar => Proc.new { "syn" }
+    end
+
+    @hickwell = Zickwell.create! :bar => "{foo bar}"
+
+    assert_equal "syn", @hickwell.bar, "Did not retrieve mask for multiple words with spaces"
+  end
+
+  test "masks should be able to directly reference methods for the class object" do
+    class Fickwell < Hickwell
+      maskable_attribute :bar, [ :foo_bar_baz ]
+
+      def foo_bar_baz
+        "ack one"
+      end
+    end
+    @hickwell = Fickwell.create! :bar => "{foo bar baz}"
+
+    assert_equal "ack one", @hickwell.bar, "Did not retrieve mask for object method reference"
+  end
+
+  test "masks should be able to directly reference aliased methods for the class object" do
+    class Fickwell < Hickwell
+      maskable_attribute :bar, [ :fbb ]
+
+      def foo_bar_baz
+        "syn two"
+      end
+
+      alias :fbb :foo_bar_baz
+    end
+    @hickwell = Fickwell.create! :bar => "{fbb}"
+
+    assert_equal "syn two", @hickwell.bar, "Did not retrieve mask for object aliased method reference"
+  end
+
+  test "should be able to handle masks for non-string types" do
+    class Nickwell < Hickwell
+      maskable_attribute :baz, [ :number ]
+
+      def number
+        5
+      end
+    end
+    @hickwell = Nickwell.create! :baz => "fixture {number}"
+
+    assert_equal "fixture 5", @hickwell.baz, "Could not handle non-string type mask"
+  end
+
   test "should raise exception if maskable_attribute isn't actually an attribute" do
     assert_raise ArgumentError do
       Hickwell.maskable_attribute :fail, [ :foo, :bar, :baz ]
