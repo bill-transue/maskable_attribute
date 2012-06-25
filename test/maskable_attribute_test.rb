@@ -88,6 +88,16 @@ class MaskableAttributeTest < ActiveSupport::TestCase
     assert_equal "syn", @hickwell.baz
   end
 
+  test "masks should be able to handle multiple words" do
+    class Dickwell < Hickwell
+      maskable_attribute :bar, :foo_bar => Proc.new { "syn" }
+    end
+
+    @hickwell = Dickwell.create! :bar => "{foo_bar}"
+
+    assert_equal "syn", @hickwell.bar, "Did not retrieve mask for multiple words"
+  end
+
   test "should raise exception if maskable_attribute isn't actually an attribute" do
     assert_raise ArgumentError do
       Hickwell.maskable_attribute :fail, [ :foo, :bar, :baz ]
