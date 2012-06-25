@@ -15,7 +15,7 @@ module MaskableAttribute
     def masked
       value = unmasked
       if !value.blank? and value.match(/\{.*\}/)
-        value.scan(/(?<={)\w+(?=})/).each do |mask| #mask: two_digit model_series
+        value.scan(/(?<={)[^}]+(?=})/).each do |mask| #mask: two_digit model_series
           value = value.sub "{#{mask}}", @masks[mask].unmask(@object) unless @masks[mask].unmask(@object).nil?
         end
       end
