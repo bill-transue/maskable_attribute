@@ -106,7 +106,7 @@ module MaskableAttribute
     end
 
     def accessed_by?(possible_accessor)
-      accessed_by.include? possible_accessor
+      accessed_by.include? possible_accessor.tr('_', ' ')
     end
   end
 end
