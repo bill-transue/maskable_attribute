@@ -1,13 +1,13 @@
 module MaskableAttribute
   module ActsAsMaskableAttribute
-    extend ActiveSupport::Concern
 
-    included do
+    def self.included(base)
+      base.send :extend, ClassMethods
     end
 
     module ClassMethods
       ##
-      # Specifices an attribute to be masked, followed by masks to be made available to the attribute.
+      # Specifies an attribute to be masked, followed by masks to be made available to the attribute.
       #
       # ==== Examples
       #
@@ -16,18 +16,23 @@ module MaskableAttribute
       # end
 
       def maskable_attribute(attribute_to_mask, masks)
-        raise ArgumentError, "invalid argument (expected attribute)" unless attribute_names.include? attribute_to_mask.to_s
+        raise ArgumentError, "invalid argument (expected attribute)" unless column_names.include? attribute_to_mask.to_s
 
         cattr_accessor :masks
         self.masks ||= {}
         self.masks[attribute_to_mask] = masks
-        
+        self.masks
+
         define_method attribute_to_mask do
-          masked_attribute attribute_to_mask
+          send("maskable_#{attribute_to_mask}").to_s
         end
 
         define_method "#{attribute_to_mask}=" do |value|
           write_attribute attribute_to_mask, masked_attribute(attribute_to_mask).set(value)
+        end
+
+        define_method "maskable_#{attribute_to_mask}" do
+          masked_attribute attribute_to_mask
         end
       end
     end

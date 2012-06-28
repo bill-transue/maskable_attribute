@@ -5,18 +5,18 @@ module MaskableAttribute
     def initialize(object, attribute, masks)
       @object = object
       @attribute = attribute
-      @masks = masks
+      @masks = Masks.new masks
     end
 
     def masks
-      @masks
+      @masks.names
     end
 
     def masked
       value = unmasked
       if !value.blank? and value.match(/\{.*\}/)
-        value.scan(/(?<={)\w+(?=})/).each do |mask|
-          value.sub! "{#{mask}}", get_value_of(mask)
+        value.scan(/(?<={)[^}]+(?=})/).each do |mask| #mask: two_digit model_series
+          value = value.sub "{#{mask}}", @masks[mask].unmask(@object).to_s unless @masks[mask].unmask(@object).nil?
         end
       end
       value
@@ -33,8 +33,12 @@ module MaskableAttribute
     end
 
     def set(value)
-      masks.each do |mask|
-        value.sub! /#{get_value_of(mask)}(?![^{]*})/, "{#{mask}}" unless get_value_of(mask).blank?
+      unless value.blank?
+        @masks.each do |mask|
+          mask.accessed_by.each do |mask_accessor|
+            value.sub! /#{mask.unmask(@object, :formatted => mask_accessor)}(?![^{]*})/, "{#{mask_accessor}}" unless mask.unmask(@object).blank?
+          end
+        end
       end
       value
     end
@@ -48,20 +52,6 @@ module MaskableAttribute
 
       def to_s
         "Invalid mask '#{@mask}' for #{@obj.class.name}"
-      end
-    end
-
-    private
-    def get_value_of(mask)
-      two_digits = !!mask.to_s.sub!("two_digits_", "")
-      if @object.respond_to? mask
-        if two_digits
-          format '%02d', @object.send(mask)
-        else
-          @object.send mask
-        end
-      else
-        raise InvalidMask.new mask, @object
       end
     end
   end
