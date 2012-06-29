@@ -28,10 +28,12 @@ module MaskableAttribute
     end
 
     def [](accessor)
+      accessor = accessor.tr " ", "_"
       (find_by_accessor(accessor) || Mask.new).accessor(accessor)
     end
 
     def find_by_accessor(accessor)
+      accessor = accessor.tr " ", "_"
       @masks.find do |mask|
         mask.accessed_by? accessor
       end
@@ -47,10 +49,11 @@ module MaskableAttribute
 
     def initialize(options=nil)
       if options.is_a? Symbol
-        @name = @method = options.to_sym
+        self.name = (@method = options.to_sym)
         options = {}
       elsif options.is_a? Hash
-        @name, options = options.flatten
+        self.name = options.flatten.first
+        options = options.flatten.last
         if options.is_a? Symbol or options.is_a? Proc
           @method = options
           options = {}
@@ -59,15 +62,15 @@ module MaskableAttribute
             @method = options.shift
             options = options.extract_options!
           else
-            @method = @name
+            @method = name.to_sym
           end
         end
       end
       @formats = Formatting::Formats.new options
     end
 
-    def name
-      @name.to_s.tr "_", " "
+    def name=(value)
+      @name = value.to_s.tr(' ', '_')
     end
 
     def accessor(*accessed_with)
@@ -82,7 +85,7 @@ module MaskableAttribute
     def unmask(*args)
       object = args.first
       options = args.extract_options!
-      format = options[:formatted] || accessor.sub(@name.to_s, "").strip.to_sym
+      format = options[:formatted] || accessor.sub("_" + name.to_s, "").strip.to_sym
 
       formats.apply format do
         begin
@@ -100,13 +103,13 @@ module MaskableAttribute
     end
 
     def accessed_by
-      formats.names.map { |format| format.to_s + " " + name}.tap do |accessed_by|
+      formats.names.map { |format| format.to_s + "_" + name}.tap do |accessed_by|
         accessed_by.push name unless formats.are_exclusive?
       end
     end
 
     def accessed_by?(possible_accessor)
-      accessed_by.include? possible_accessor.tr('_', ' ')
+      accessed_by.include? possible_accessor
     end
   end
 end

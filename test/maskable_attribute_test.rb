@@ -116,9 +116,9 @@ class MaskableAttributeTest < ActiveSupport::TestCase
         "ack one"
       end
     end
-    @hickwell = Fickwell.create! :bar => "{foo bar baz}"
+    @fickwell = Fickwell.create! :bar => "{foo bar baz}"
 
-    assert_equal "ack one", @hickwell.bar, "Did not retrieve mask for object method reference"
+    assert_equal "ack one", @fickwell.bar, "Did not retrieve mask for object method reference"
   end
 
   test "masks should be able to directly reference aliased methods for the class object" do

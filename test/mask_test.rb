@@ -38,52 +38,59 @@ class MaskTest < ActiveSupport::TestCase
     assert_equal 'Success', mask.unmask('SUCCESS', { :formatted => :capitalize })
   end
 
-  test "should turn underscores into spaces for its name" do
-    mask = MaskableAttribute::Mask.new  :foo_bar
+  test "should turn spaces into underscores for its name" do
+    mask = MaskableAttribute::Mask.new :"foo bar" => :foo_bar
 
-    assert_equal "foo bar", mask.name
+    assert_equal "foo_bar", mask.name
     assert_equal :foo_bar, mask.method
   end
 
   test "should return all accessed_by names" do
     mask = MaskableAttribute::Mask.new :downcase => { :formats => { :capitalized => :capitalize } }
 
-    assert_equal ["capitalized downcase", "downcase"], mask.accessed_by
+    assert_equal ["capitalized_downcase", "downcase"], mask.accessed_by
   end
 
   test "should return all formatted exclusively accessed_by names" do
     mask = MaskableAttribute::Mask.new :downcase => { :exclusive_format => { :capitalized => :capitalize } }
 
-    assert_equal ["capitalized downcase"], mask.accessed_by
+    assert_equal ["capitalized_downcase"], mask.accessed_by
   end
 
   test "should determine whether a string matches its accessible names" do
     mask = MaskableAttribute::Mask.new :downcase => { :exclusive_format => { :capitalized => :capitalize } }
 
     assert !mask.accessed_by?("downcase")
-    assert mask.accessed_by?("capitalized downcase")
+    assert mask.accessed_by?("capitalized_downcase")
+  end
+
+  test "should accept two word formats with two word masks" do
+    mask = MaskableAttribute::Mask.new :down_cased => [ :downcase, :formats => { :capitalized_but => :capitalize } ]
+
+    assert mask.accessed_by?("capitalized_but_down_cased")
+    assert_equal 'Success', mask.unmask('SUCCESS', :formatted => :capitalized_but)
   end
 
   #describe masks
   test "should find correct mask by accessor" do
-    masks = MaskableAttribute::Masks.new [ :bar => { :exclusive_format => { :capitalized => :capitalize } },
-                                           :baz => { :format => :upcase } ]
+    masks = MaskableAttribute::Masks.new [ { :bar => { :exclusive_format => { :capitalized => :capitalize } } },
+                                           { :baz => { :format => :upcase } } ]
 
     assert_equal "bar", masks.find_by_accessor("capitalized bar").name
   end
 
   test "should be accessible by accessor" do
-    masks = MaskableAttribute::Masks.new [ :bar => { :exclusive_format => { :capitalized => :capitalize } },
-                                           :baz => { :format => :upcase } ]
+    masks = MaskableAttribute::Masks.new [ { :bar => { :exclusive_format => :capitalize } },
+                                           { :baz => { :format => :upcase } } ]
 
-    assert_equal "bar", masks["capitalized bar"].name
+    assert_equal "baz", masks["upcase baz"].name
   end
 
-  test "should unmask given object with correct mask and format" do
-    masks = MaskableAttribute::Masks.new [ :downcase => { :exclusive_format => { :capitalized => :capitalize } },
-                                           :bar => { :format => :upcase } ]
+  test "should unmask given object with correct mask and its exlusive format" do
+    masks = MaskableAttribute::Masks.new [ { :downcase => { :exclusive_format => :capitalize } },
+                                           { :bar => { :format => :upcase } } ]
 
-    assert_equal "Success", masks["capitalized downcase"].unmask("SUCCESS")
+    assert_equal "Success", masks["capitalize downcase"].unmask("SUCCESS")
   end
 
   test "should return nil when trying to access and get value of a non-existent mask" do
