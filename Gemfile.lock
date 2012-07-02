@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    maskable_attribute (0.0.1)
+    maskable_attribute (0.0.2)
       rails (>= 2.3.10)
 
 GEM

@@ -4,14 +4,14 @@ module MaskableAttribute
 
     #:bar
     #:foo => :bar
-    #:foo => [ :bar, baz, :qux ]
+    #:foo => Proc.new { |object| object.size * 3 }
     #:foo => { :format => :two_digit }
     #:foo => { :formats => [ :two_digit, :upcase, :downcase ] }
     #:bar => { :exclusive_format => { :capitalized => Proc.new{ |mask| mask.captialized } } }
     #:bar => { :exclusive_formats => { :capitalized => Proc.new{ |mask| mask.captialized }, :titleized => :titleize } }
     #:baz => { :default_format => :titleize }
-    #:bar => [ :quux, { :formats => ... } ]
-    #:bar => [ Proc.new { |object| object.size * 3 }, { :formats => ... } ]
+    #:bar => { :method => :quux, { :formats => ... } }
+    #:bar => { :method => Proc.new { |object| object.size * 3 }, :formats => ... }
     def initialize(masks)
       @masks = masks.map do |mask|
         if mask.is_a? Array
@@ -58,7 +58,9 @@ module MaskableAttribute
           @method = options
           options = {}
         else
-          if options.is_a? Array
+          if options.is_a? Hash
+            @method = options.delete(:method) || name.to_sym
+          elsif options.is_a? Array
             @method = options.shift
             options = options.extract_options!
           else

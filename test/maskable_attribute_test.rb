@@ -160,4 +160,18 @@ class MaskableAttributeTest < ActiveSupport::TestCase
       Hickwell.maskable_attribute :qux
     end
   end
+
+  test "should be able to handle a proc and a format" do
+    class Tickwell < Hickwell
+      maskable_attribute :bar, { :foo => {
+                                   :method => Proc.new { "2" },
+                                   :default_format => Proc.new { |value| format "%02d", value }
+                                 }
+                               }
+    end
+
+    @hickwell = Tickwell.create! :bar => "{foo}"
+
+    assert_equal "02", @hickwell.bar, "Did not retrieve mask having a proc and a format specified"
+  end
 end
