@@ -87,7 +87,7 @@ module MaskableAttribute
     def unmask(*args)
       object = args.first
       options = args.extract_options!
-      format = options[:formatted] || accessor.sub("_" + name.to_s, "").strip.to_sym
+      format = (options[:formatted] || accessor).to_s.sub("_" + name.to_s, "").strip.to_sym
 
       formats.apply format do
         begin

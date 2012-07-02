@@ -174,4 +174,23 @@ class MaskableAttributeTest < ActiveSupport::TestCase
 
     assert_equal "02", @hickwell.bar, "Did not retrieve mask having a proc and a format specified"
   end
+
+  test "should not confuse masks' formatting" do
+    class Pickwell < Hickwell
+      maskable_attribute :bar, { :foo => {
+                                   :method => Proc.new { "2" },
+                                   :format => { :two_digit => Proc.new { |value| format "%02d", value } }
+                                 }
+                               }
+    end
+
+    @pickwell = Pickwell.create! :bar => "{foo}"
+
+    assert_equal "2", @pickwell.bar
+    @pickwell.bar = "2"
+    assert_equal "{foo}", @pickwell.maskable_bar.unmasked
+    @pickwell.bar = "02"
+    assert_equal "{two_digit_foo}", @pickwell.maskable_bar.unmasked
+    assert_equal "02", @pickwell.bar
+  end
 end
