@@ -13,6 +13,14 @@ class FormattingTest < ActiveSupport::TestCase
     assert_equal "SUCCESS", format.apply("success")
   end
 
+  test "should return nil when formatting methods raise exceptions" do
+    format = MaskableAttribute::Formatting::Format.new Proc.new { |value| raise 'I meant to do this...' }
+
+    assert_nothing_raised do
+      assert_nil format.apply("success")
+    end
+  end
+
   #describe Formats
   test "should accept a hash of a single format" do
     formats = MaskableAttribute::Formatting::Formats.new :formats => :upcase

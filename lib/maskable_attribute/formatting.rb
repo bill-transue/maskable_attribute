@@ -58,12 +58,16 @@ module MaskableAttribute
       end
 
       def apply(input)
-        if @method.is_a? Symbol
-          input.send(@method)
-        elsif @method.is_a? Proc
-          @method.call input
-        else
-          input
+        begin
+          if @method.is_a? Symbol
+            input.send(@method)
+          elsif @method.is_a? Proc
+            @method.call input
+          else
+            input
+          end
+        rescue
+          nil
         end
       end
     end
