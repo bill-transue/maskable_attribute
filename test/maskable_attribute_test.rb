@@ -193,4 +193,16 @@ class MaskableAttributeTest < ActiveSupport::TestCase
     assert_equal "{two_digit_foo}", @pickwell.maskable_bar.unmasked
     assert_equal "02", @pickwell.bar
   end
+
+  test "should not mask if specified as a non-maskable prefix" do
+    class Zickwell < Hickwell
+      maskable_attribute :bar, { :foo => { :method => Proc.new { "TEST" } } }, { :protected_prefixes => [ "prefix" ] }
+    end
+
+    @zickwell = Zickwell.create! :bar => "TEST"
+    assert_equal "{foo}", @zickwell.maskable_bar.unmasked, "Mask not being replaced"
+
+    @zickwell.update_attribute :bar, "prefixTEST"
+    assert_equal "prefixTEST", @zickwell.maskable_bar.unmasked, "Incorrectly masked for non-maskable prefix"
+  end
 end
