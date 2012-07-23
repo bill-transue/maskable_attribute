@@ -2,10 +2,11 @@ module MaskableAttribute
   class MaskableAttribute
     attr_accessor :object, :attribute, :masks
 
-    def initialize(object, attribute, masks)
+    def initialize(object, attribute, masks, options)
       @object = object
       @attribute = attribute
       @masks = Masks.new masks
+      @protected_prefixes = Array.wrap(options.delete(:protected_prefixes) || options.delete(:protected_prefix)).join('|')
     end
 
     def masks
@@ -37,7 +38,7 @@ module MaskableAttribute
       unless value.blank?
         @masks.each do |mask|
           mask.accessed_by.each do |mask_accessor|
-            value.sub! /#{mask.unmask(@object, :formatted => mask_accessor)}(?![^{]*})/, "{#{mask_accessor}}" unless mask.unmask(@object).blank?
+            value.sub! /#{"(?<!#{@protected_prefixes})" unless @protected_prefixes.blank?}#{mask.unmask(@object, :formatted => mask_accessor)}(?![^{]*})/, "{#{mask_accessor}}" unless mask.unmask(@object).blank?
           end
         end
       end

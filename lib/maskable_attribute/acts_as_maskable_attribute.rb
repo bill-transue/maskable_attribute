@@ -12,13 +12,16 @@ module MaskableAttribute
       # ==== Examples
       #
       # class Foo < ActiveRecord::Base
-      #   maskable_attrribute :some_attribute, [ :some_method_be_used_as_a_mask, :another_attribute_mask ]
+      #   maskable_attrribute :some_attribute,
+      #                       [ :some_method_be_used_as_a_mask, :another_attribute_mask ],
+      #                       :protected_prefixes => [ 'prefix' ]
       # end
 
-      def maskable_attribute(attribute_to_mask, masks)
+      def maskable_attribute(attribute_to_mask, masks, options = {})
         raise ArgumentError, "invalid argument (expected attribute)" unless column_names.include? attribute_to_mask.to_s
 
         cattr_accessor :masks
+
         self.masks ||= {}
         self.masks[attribute_to_mask] = masks
         self.masks
@@ -28,19 +31,19 @@ module MaskableAttribute
         end
 
         define_method "#{attribute_to_mask}=" do |value|
-          write_attribute attribute_to_mask, masked_attribute(attribute_to_mask).set(value)
+          write_attribute attribute_to_mask, masked_attribute(attribute_to_mask, options).set(value)
         end
 
         define_method "maskable_#{attribute_to_mask}" do
-          masked_attribute attribute_to_mask
+          masked_attribute attribute_to_mask, options
         end
       end
     end
 
     attr_accessor :masked_attribute
 
-    def masked_attribute(attribute)
-      @masked_attribute ||= MaskableAttribute.new self, attribute, self.class.masks[attribute]
+    def masked_attribute(attribute, options)
+      @masked_attribute ||= MaskableAttribute.new self, attribute, self.class.masks[attribute], options
     end
   end
 end
