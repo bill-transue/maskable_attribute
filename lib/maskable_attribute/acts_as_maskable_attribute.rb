@@ -13,8 +13,7 @@ module MaskableAttribute
       #
       # class Foo < ActiveRecord::Base
       #   maskable_attrribute :some_attribute,
-      #                       [ :some_method_be_used_as_a_mask, :another_attribute_mask ],
-      #                       :protected_prefixes => [ 'prefix' ]
+      #                       [ :some_method_be_used_as_a_mask, :another_attribute_mask ]
       # end
 
       def maskable_attribute(attribute_to_mask, masks, options = {})
@@ -28,10 +27,12 @@ module MaskableAttribute
 
         define_method attribute_to_mask do
           send("maskable_#{attribute_to_mask}").to_s
+          #masked_attribute attribute_to_mask, options
         end
 
         define_method "#{attribute_to_mask}=" do |value|
-          write_attribute attribute_to_mask, masked_attribute(attribute_to_mask, options).set(value)
+          #write_attribute attribute_to_mask, masked_attribute(attribute_to_mask, options).set(value)
+          write_attribute attribute_to_mask, value
         end
 
         define_method "maskable_#{attribute_to_mask}" do

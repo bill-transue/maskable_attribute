@@ -6,7 +6,6 @@ module MaskableAttribute
       @object = object
       @attribute = attribute
       @masks = Masks.new masks
-      @protected_prefixes = Array.wrap(options.delete(:protected_prefixes) || options.delete(:protected_prefix)).join('|')
     end
 
     def masks
@@ -24,11 +23,13 @@ module MaskableAttribute
       value
     end
 
-    alias :to_s :masked
-
-    def masked_object
-      @object
+    # update an attribute to replace all masks in place
+    # i.e. "something{some_mask}cool" will become "somethingelsecool"
+    def demask
+      @object.write_attribute attribute, masked
     end
+
+    alias :to_s :masked
 
     def unmasked
       @object.read_attribute attribute
@@ -42,6 +43,7 @@ module MaskableAttribute
           end
         end
       end
+
       value
     end
 
