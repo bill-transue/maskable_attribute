@@ -192,4 +192,18 @@ class MaskableAttributeTest < ActiveSupport::TestCase
     assert_equal "{two_digit_foo}", @pickwell.maskable_bar.unmasked
     assert_equal "02", @pickwell.maskable_bar.masked
   end
+
+  test "should return format list" do
+    class Jazwell < Hickwell
+      maskable_attribute :bar, { :foo => {
+                                   :method => Proc.new { "2" },
+                                   :format => { :two_digit => Proc.new { |value| format "%02d", value } }
+                                 }
+                               }
+    end
+
+    @jazwell = Jazwell.create! :bar => "{foo}"
+
+    assert_equal [:foo, :two_digit_foo], @jazwell.maskable_bar.masks_with_formats
+  end
 end

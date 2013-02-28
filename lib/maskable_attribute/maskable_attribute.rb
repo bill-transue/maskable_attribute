@@ -12,6 +12,10 @@ module MaskableAttribute
       @masks.names
     end
 
+    def masks_with_formats
+      @masks.formatted_names
+    end
+
     def masked
       value = unmasked
       if !value.blank? and value.match(/\{.*\}/)

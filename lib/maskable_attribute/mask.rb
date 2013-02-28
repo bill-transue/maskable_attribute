@@ -42,6 +42,16 @@ module MaskableAttribute
     def names
       @masks.map(&:name).map(&:to_sym)
     end
+
+    def formatted_names
+      @masks.inject([]) do |names, mask|
+        names.push mask.name.to_sym
+        mask.formats.each do |format, proc|
+          names.push "#{format}_#{mask.name}".to_sym
+        end
+        names
+      end
+    end
   end
 
   class Mask
