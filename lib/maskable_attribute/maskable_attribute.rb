@@ -26,7 +26,7 @@ module MaskableAttribute
     # update an attribute to replace all masks in place
     # i.e. "something{some_mask}cool" will become "somethingelsecool"
     def demask
-      @object.write_attribute attribute, masked
+      @object.send :write_attribute, attribute, masked
     end
 
     alias :to_s :masked
